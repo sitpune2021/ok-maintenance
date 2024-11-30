@@ -30,7 +30,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace "com.okmaintenance.servicebooking"
+    namespace "com.okmaintenance.customer"
     compileSdkVersion 34
     ndkVersion = "27.0.12077973"
     java.toolchain.languageVersion = JavaLanguageVersion.of(21)
