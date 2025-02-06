@@ -11,6 +11,21 @@ class LanguageEn extends Languages {
   String get provider => 'Provider';
 
   @override
+  String get lblRegisterAsUser => 'Register As User';
+
+  @override
+  String get lblSignInWithGoogle => "Sign In With Google";
+
+  @override
+  String get lblSignInWithOTP => "Sign In With OTP";
+
+  @override
+  String get lblSignInWithApple => "Sign in with Apple";
+
+  @override
+  String get lblOrContinueWith => "Or Continue With";
+
+  @override
   String get lblShowingOnly4Handyman => 'Showing Only 4 Handyman';
 
   @override

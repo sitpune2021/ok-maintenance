@@ -9,6 +9,16 @@ abstract class Languages {
 
   String get provider;
 
+  String get lblRegisterAsUser;
+
+  String get lblOrContinueWith;
+
+  String get lblSignInWithGoogle;
+
+  String get lblSignInWithApple;
+
+  String get lblSignInWithOTP;
+
   String get lblShowingOnly4Handyman;
 
   String get lblRecentlyOnlineHandyman;

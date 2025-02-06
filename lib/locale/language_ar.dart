@@ -11,6 +11,22 @@ class LanguageAr extends Languages {
   String get provider => 'مزود';
 
   @override
+  String get lblRegisterAsUser => 'سجل كمستخدم';
+
+  @override
+  String get lblOrContinueWith => "أو متابعة";
+
+  @override
+  String get lblSignInWithGoogle => "الدخول مع جوجل";
+
+  @override
+  String get lblSignInWithOTP => "تسجيل الدخول مع OTP";
+
+  @override
+  String get lblSignInWithApple => "تسجيل الدخول مع Apple";
+
+
+  @override
   String get lblShowingOnly4Handyman => 'اضهار ٤ عمال فقط';
 
   @override

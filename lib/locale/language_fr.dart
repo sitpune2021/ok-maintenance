@@ -12,6 +12,21 @@ class LanguageFr extends Languages {
   String get provider => 'Fournisseur';
 
   @override
+  String get lblRegisterAsUser => 'S\'inscrire en tant qu\'utilisateur';
+
+  @override
+  String get lblOrContinueWith => "Ou continuer avec";
+
+  @override
+  String get lblSignInWithGoogle => "Connectez-vous avec Google";
+
+  @override
+  String get lblSignInWithOTP => "Connectez-vous avec OTP";
+
+  @override
+  String get lblSignInWithApple => "Connectez-vous avec Apple";
+
+  @override
   String get lblShowingOnly4Handyman => 'Montrant seulement 4 bricoles';
 
   @override

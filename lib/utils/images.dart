@@ -12,6 +12,7 @@ const services = 'assets/icons/ic_services.png';
 const handyman = 'assets/icons/ic_handyman.png';
 const ic_time_slots = 'assets/icons/ic_time_slots.png';
 const language = 'assets/icons/ic_language.png';
+const ic_calling = 'assets/icons/ic_calling.png';
 const changePassword = 'assets/icons/ic_change_password.png';
 const rateUs = 'assets/icons/ic_rateUs.png';
 const termCondition = 'assets/icons/ic_term_condition.png';

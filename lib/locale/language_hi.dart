@@ -12,6 +12,21 @@ class LanguageHi extends Languages {
   String get provider => 'प्रदाता';
 
   @override
+  String get lblRegisterAsUser => 'उपयोगकर्ता के रूप में पंजीकरण करें';
+
+  @override
+  String get lblOrContinueWith => "या के साथ जारी रखें";
+
+  @override
+  String get lblSignInWithGoogle => "Google के साथ साइन इन करें";
+
+  @override
+  String get lblSignInWithOTP => "ओटीपी के साथ साइन इन करें";
+
+  @override
+  String get lblSignInWithApple => "Apple के साथ साइन इन करें";
+
+  @override
   String get lblShowingOnly4Handyman => 'केवल 4 अप्रेंटिस दिखा रहा है';
 
   @override

@@ -10,12 +10,15 @@ import 'package:handyman_provider_flutter/handyman/handyman_dashboard_screen.dar
 import 'package:handyman_provider_flutter/main.dart';
 import 'package:handyman_provider_flutter/models/user_data.dart';
 import 'package:handyman_provider_flutter/provider/provider_dashboard_screen.dart';
+import 'package:handyman_provider_flutter/utils/app_configuration.dart';
 import 'package:handyman_provider_flutter/utils/common.dart';
 import 'package:handyman_provider_flutter/utils/configs.dart';
 import 'package:handyman_provider_flutter/utils/constant.dart';
 import 'package:handyman_provider_flutter/utils/extensions/string_extension.dart';
 import 'package:handyman_provider_flutter/utils/images.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../networks/rest_apis.dart';
 
@@ -65,6 +68,103 @@ class _SignInScreenState extends State<SignInScreen> {
       setState(() {});
     }
   }
+
+
+
+
+  void googleSignIn() async {
+    // if (!appStore.isLoading) {
+    //   appStore.setLoading(true);
+    //   await authService.signInWithGoogle(context).then((googleUser) async {
+    //     String firstName = '';
+    //     String lastName = '';
+    //     if (googleUser.displayName.validate().split(' ').length >= 1)
+    //       firstName = googleUser.displayName.splitBefore(' ');
+    //     if (googleUser.displayName.validate().split(' ').length >= 2)
+    //       lastName = googleUser.displayName.splitAfter(' ');
+    //
+    //     Map<String, dynamic> request = {
+    //       'first_name': firstName,
+    //       'last_name': lastName,
+    //       'email': googleUser.email,
+    //       'username': googleUser.email
+    //           .splitBefore('@')
+    //           .replaceAll('.', '')
+    //           .toLowerCase(),
+    //       // 'password': passwordCont.text.trim(),
+    //       'social_image': googleUser.photoURL,
+    //       'login_type': LOGIN_TYPE_GOOGLE,
+    //     };
+    //     var loginResponse = await loginUser(request, isSocialLogin: true);
+    //
+    //     loginResponse.userData!.profileImage = googleUser.photoURL.validate();
+    //
+    //     await saveUserData(loginResponse.userData!);
+    //     appStore.setLoginType(LOGIN_TYPE_GOOGLE);
+    //
+    //     authService.verifyFirebaseUser();
+    //
+    //     onLoginSuccessRedirection();
+    //     appStore.setLoading(false);
+    //   }).catchError((e) {
+    //     appStore.setLoading(false);
+    //     log(e.toString());
+    //     toast(e.toString());
+    //   });
+    // }
+  }
+
+  void appleSign() async {
+    // if (!appStore.isLoading) {
+    //   appStore.setLoading(true);
+    //
+    //   await authService.appleSignIn().then((req) async {
+    //     await loginUser(req, isSocialLogin: true).then((value) async {
+    //       await saveUserData(value.userData!);
+    //       appStore.setLoginType(LOGIN_TYPE_APPLE);
+    //
+    //       appStore.setLoading(false);
+    //       authService.verifyFirebaseUser();
+    //
+    //       onLoginSuccessRedirection();
+    //     }).catchError((e) {
+    //       appStore.setLoading(false);
+    //       log(e.toString());
+    //       throw e;
+    //     });
+    //   }).catchError((e) {
+    //     appStore.setLoading(false);
+    //     toast(e.toString());
+    //   });
+    // }
+  }
+
+  void otpSignIn() async {
+    // hideKeyboard(context);
+    //
+    // OTPLoginScreen().launch(context);
+  }
+
+  void onLoginSuccessRedirection() {
+    // afterBuildCreated(() {
+    //   appStore.setLoading(false);
+    //   if (widget.isFromServiceBooking.validate() ||
+    //       widget.isFromDashboard.validate() ||
+    //       widget.returnExpected.validate()) {
+    //     if (widget.isFromDashboard.validate()) {
+    //       push(DashboardScreen(redirectToBooking: true),
+    //           isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+    //     } else {
+    //       finish(context, true);
+    //     }
+    //   } else {
+    //     DashboardScreen().launch(context,
+    //         isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+    //   }
+    // });
+  }
+
+
 
   //------------------------------------ UI ----------------------------------//
 
@@ -132,6 +232,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
                       _buildForgotRememberWidget(),
                       _buildButtonWidget(),
+                      if (!getBoolAsync(HAS_IN_REVIEW)) _buildSocialWidget(),
                       16.height,
                       SnapHelperWidget<bool>(
                         future: isIqonicProduct,
@@ -261,11 +362,142 @@ class _SignInScreenState extends State<SignInScreen> {
             )
           ],
         ),
+        TextButton(
+          onPressed: () {
+            if (isAndroid) {
+              if (getStringAsync(PROVIDER_PLAY_STORE_URL).isNotEmpty) {
+                launchUrl(Uri.parse(getStringAsync(PROVIDER_PLAY_STORE_URL)),
+                    mode: LaunchMode.externalApplication);
+              } else {
+                launchUrl(
+                    Uri.parse(
+                        '${getSocialMediaLink(LinkProvider.PLAY_STORE)}$CUSTOMER_PACKAGE_NAME'),
+                    mode: LaunchMode.externalApplication);
+              }
+            } else if (isIOS) {
+              if (getStringAsync(PROVIDER_APPSTORE_URL).isNotEmpty) {
+                commonLaunchUrl(getStringAsync(PROVIDER_APPSTORE_URL));
+              } else {
+                commonLaunchUrl(IOS_LINK_FOR_PARTNER);
+              }
+            }
+          },
+          child: Text(languages.lblRegisterAsUser,
+              style: boldTextStyle(color: primaryColor)),
+        )
       ],
     );
   }
 
   //endregion
+
+  Widget _buildSocialWidget() {
+    // if (appConfigurationStore.socialLoginStatus) {
+      return Column(
+        children: [
+          20.height,
+          // if ((appConfigurationStore.googleLoginStatus ||
+          //     appConfigurationStore.otpLoginStatus) ||
+          //     (isIOS && appConfigurationStore.appleLoginStatus))
+            Row(
+              children: [
+                Divider(color: context.dividerColor, thickness: 2).expand(),
+                16.width,
+                Text(languages.lblOrContinueWith, style: secondaryTextStyle()),
+                16.width,
+                Divider(color: context.dividerColor, thickness: 2).expand(),
+              ],
+            ),
+          24.height,
+          // if (appConfigurationStore.googleLoginStatus)
+            AppButton(
+              text: '',
+              color: context.cardColor,
+              padding: EdgeInsets.all(8),
+              textStyle: boldTextStyle(),
+              width: context.width() - context.navigationBarHeight,
+              child: Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(12),
+                    decoration: boxDecorationWithRoundedCorners(
+                      backgroundColor: primaryColor.withOpacity(0.1),
+                      boxShape: BoxShape.circle,
+                    ),
+                    child: GoogleLogoWidget(size: 16),
+                  ),
+                  Text(languages.lblSignInWithGoogle,
+                      style: boldTextStyle(size: 12),
+                      textAlign: TextAlign.center)
+                      .expand(),
+                ],
+              ),
+              onTap: googleSignIn,
+            ),
+          // if (appConfigurationStore.googleLoginStatus)
+            16.height,
+          // if (appConfigurationStore.otpLoginStatus)
+            AppButton(
+              text: '',
+              color: context.cardColor,
+              padding: EdgeInsets.all(8),
+              textStyle: boldTextStyle(),
+              width: context.width() - context.navigationBarHeight,
+              child: Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: boxDecorationWithRoundedCorners(
+                      backgroundColor: primaryColor.withOpacity(0.1),
+                      boxShape: BoxShape.circle,
+                    ),
+                    child: ic_calling
+                        .iconImage(size: 18, color: primaryColor)
+                        .paddingAll(4),
+                  ),
+                  Text(languages.lblSignInWithOTP,
+                      style: boldTextStyle(size: 12),
+                      textAlign: TextAlign.center)
+                      .expand(),
+                ],
+              ),
+              onTap: otpSignIn,
+            ),
+          if (appConfigurationStore.otpLoginStatus) 16.height,
+          if (isIOS)
+            if (appConfigurationStore.appleLoginStatus)
+              AppButton(
+                text: '',
+                color: context.cardColor,
+                padding: EdgeInsets.all(8),
+                textStyle: boldTextStyle(),
+                width: context.width() - context.navigationBarHeight,
+                child: Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: boxDecorationWithRoundedCorners(
+                        backgroundColor: primaryColor.withOpacity(0.1),
+                        boxShape: BoxShape.circle,
+                      ),
+                      child: Icon(Icons.apple),
+                    ),
+                    Text(languages.lblSignInWithApple,
+                        style: boldTextStyle(size: 12),
+                        textAlign: TextAlign.center)
+                        .expand(),
+                  ],
+                ),
+                onTap: appleSign,
+              ),
+        ],
+      );
+    // }
+    // else {
+    //   return Offstage();
+    // }
+  }
+
 
   //region Methods
   void _handleLogin() {
@@ -315,7 +547,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
       if (res.userType.validate().trim() == USER_TYPE_PROVIDER) {
         ProviderDashboardScreen(index: 0).launch(context, isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
-      } else if (res.userType.validate().trim() == USER_TYPE_HANDYMAN) {
+      } else if (res.userType.validate().trim() == USER_TYPE_HANDYMAN || res.userType.validate().trim() == IS_USER) {
         HandymanDashboardScreen().launch(context, isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
       } else {
         toast(languages.cantLogin, print: true);
@@ -325,6 +557,28 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
+  // void redirectWidget({required UserData res}) async {
+  //   appStore.setLoading(false);
+  //   TextInput.finishAutofillContext();
+  //
+  //   if (res.status.validate() == 1 || res.status.validate() == 0) { // Allow login if status is 0
+  //     await appStore.setToken(res.apiToken.validate());
+  //     appStore.setTester(res.email == DEFAULT_PROVIDER_EMAIL || res.email == DEFAULT_HANDYMAN_EMAIL);
+  //
+  //     // Navigate to ProviderDashboardScreen for provider and user types
+  //     if (res.userType.validate().trim() == USER_TYPE_PROVIDER ) {
+  //       ProviderDashboardScreen(index: 0).launch(context, isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+  //     }
+  //     else if (res.userType.validate().trim() == USER_TYPE_HANDYMAN || res.userType.validate().trim() == IS_USER) {
+  //       HandymanDashboardScreen().launch(context, isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+  //     }
+  //     else {
+  //       toast(languages.cantLogin, print: true);
+  //     }
+  //   } else {
+  //     toast(languages.lblWaitForAcceptReq); // Show proper message for pending users
+  //   }
+  // }
   //endregion
 
   @override

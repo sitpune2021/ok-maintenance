@@ -2,7 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:handyman_provider_flutter/utils/constant.dart';
 import 'package:nb_utils/nb_utils.dart';
-
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../../main.dart';
 import '../../models/user_data.dart';
 import '../../networks/rest_apis.dart';
@@ -68,4 +71,45 @@ class AuthService {
       log('verifyFirebaseUser $e');
     }
   }
+
+  //region Google Login
+  Future<User> signInWithGoogle(BuildContext context) async {
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+
+    if (googleSignInAccount != null) {
+      final GoogleSignInAuthentication googleSignInAuthentication =
+      await googleSignInAccount.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
+
+      final UserCredential authResult =
+      await FirebaseAuth.instance.signInWithCredential(credential);
+      final User user = authResult.user!;
+
+      assert(!user.isAnonymous);
+
+      final User currentUser = FirebaseAuth.instance.currentUser!;
+      assert(user.uid == currentUser.uid);
+
+      try {
+        AuthCredential emailAuthCredential = EmailAuthProvider.credential(
+            email: user.email!, password: DEFAULT_FIREBASE_PASSWORD);
+        user.linkWithCredential(emailAuthCredential);
+      } catch (e) {
+        log(e);
+      }
+
+      await googleSignIn.signOut();
+
+      return user;
+    } else {
+      appStore.setLoading(false);
+      throw USER_NOT_CREATED;
+    }
+  }
+
 }

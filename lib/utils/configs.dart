@@ -10,6 +10,13 @@ const DOMAIN_URL = 'https://okewebs.com'; // Don't add slash at the end of the u
 
 const BASE_URL = "$DOMAIN_URL/api/";
 
+
+/// You can change this to your Provider App package name
+/// This will be used in Registered As Partner in Sign In Screen where your users can redirect to the Play/App Store for Provider App
+/// You can specify in Admin Panel, These will be used if you don't specify in Admin Panel
+const CUSTOMER_PACKAGE_NAME = 'com.okmaintenance.provider';
+
+
 /// You can specify in Admin Panel, These will be used if you don't specify in Admin Panel
 const IOS_LINK_FOR_PARTNER = "https://apps.apple.com/in/app/handyman-provider-app/id1596025324";
 const TERMS_CONDITION_URL = 'https://okewebs.com/term-conditions';

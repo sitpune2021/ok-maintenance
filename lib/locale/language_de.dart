@@ -11,6 +11,21 @@ class LanguageDe extends Languages {
   String get provider => 'Anbieter';
 
   @override
+  String get lblRegisterAsUser => 'Als Benutzer registrieren';
+
+  @override
+  String get lblOrContinueWith => "Oder fortfahren";
+
+  @override
+  String get lblSignInWithGoogle => "Anmeldung mit Google";
+
+  @override
+  String get lblSignInWithOTP => "Melden Sie sich mit OTP an";
+
+  @override
+  String get lblSignInWithApple => "Melden Sie sich mit Apple an";
+
+  @override
   String get lblShowingOnly4Handyman => 'Nur 4 Handwerker zeigen';
 
   @override
