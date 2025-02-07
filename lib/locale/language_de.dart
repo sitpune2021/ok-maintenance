@@ -359,6 +359,14 @@ class LanguageDe extends Languages {
   String get hintRequired => 'Dieses Feld ist erforderlich';
 
   @override
+  String get hintInvalidEmail => 'Ungültige E-Mail';
+
+
+
+  @override
+  String get hintInvalidMobile => 'Ungültige Handynummer';
+
+  @override
   String get lblUnAuthorized => "Demo-Benutzer kann nicht für diese Aktion gewährt werden";
 
   @override

@@ -63,6 +63,30 @@ mixin _$AppStore on _AppStore, Store {
     });
   }
 
+  late final _$loginTypeAtom =
+  Atom(name: '_AppStore.loginType', context: context);
+
+  @override
+  String get loginType {
+    _$loginTypeAtom.reportRead();
+    return super.loginType;
+  }
+
+  @override
+  set loginType(String value) {
+    _$loginTypeAtom.reportWrite(value, super.loginType, () {
+      super.loginType = value;
+    });
+  }
+
+  late final _$setLoginTypeAsyncAction =
+  AsyncAction('_AppStore.setLoginType', context: context);
+
+  @override
+  Future<void> setLoginType(String val) {
+    return _$setLoginTypeAsyncAction.run(() => super.setLoginType(val));
+  }
+
   late final _$isLoadingAtom =
       Atom(name: '_AppStore.isLoading', context: context);
 
@@ -1109,6 +1133,7 @@ isDarkMode: ${isDarkMode},
 isLoading: ${isLoading},
 isTester: ${isTester},
 userId: ${userId},
+loginType: ${loginType},
 userFirstName: ${userFirstName},
 userLastName: ${userLastName},
 userEmail: ${userEmail},

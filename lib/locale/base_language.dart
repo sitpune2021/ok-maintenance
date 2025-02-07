@@ -241,6 +241,10 @@ abstract class Languages {
 
   String get hintRequired;
 
+  String get hintInvalidEmail;
+
+  String get hintInvalidMobile;
+
   String get lblUnAuthorized;
 
   String get btnVerifyId;

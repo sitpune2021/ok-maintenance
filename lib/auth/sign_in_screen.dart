@@ -513,6 +513,7 @@ class _SignInScreenState extends State<SignInScreen> {
     Map<String, dynamic> request = {
       'email': emailCont.text.trim(),
       'password': passwordCont.text.trim(),
+      'login_type': IS_USER,
     };
 
     appStore.setLoading(true);
@@ -526,6 +527,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
       await setValue(USER_PASSWORD, passwordCont.text);
       await setValue(IS_REMEMBERED, isRemember);
+      await appStore.setLoginType(IS_USER);
       await saveUserData(user);
 
       authService.verifyFirebaseUser();
@@ -545,6 +547,9 @@ class _SignInScreenState extends State<SignInScreen> {
       await appStore.setToken(res.apiToken.validate());
       appStore.setTester(res.email == DEFAULT_PROVIDER_EMAIL || res.email == DEFAULT_HANDYMAN_EMAIL);
 
+      // Set the user ID in the appStore
+      appStore.setUserId(res.id.validate());
+      print('User ID set in appStore: ${appStore.userId}');
       if (res.userType.validate().trim() == USER_TYPE_PROVIDER) {
         ProviderDashboardScreen(index: 0).launch(context, isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
       } else if (res.userType.validate().trim() == USER_TYPE_HANDYMAN || res.userType.validate().trim() == IS_USER) {

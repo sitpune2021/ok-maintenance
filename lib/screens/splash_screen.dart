@@ -35,8 +35,66 @@ class SplashScreenState extends State<SplashScreen> {
     });
   }
 
+  // Future<void> init() async {
+  //   ///Set app configurations
+  //   await getAppConfigurations().then((value) {}).catchError((e) async {
+  //     if (!await isNetworkAvailable()) {
+  //       toast(errorInternetNotAvailable);
+  //     }
+  //     log(e);
+  //   });
+  //
+  //   appStore.setLoading(false);
+  //   if (!getBoolAsync(IS_APP_CONFIGURATION_SYNCED_AT_LEAST_ONCE)) {
+  //     appNotSynced = true;
+  //     setState(() {});
+  //   } else {
+  //     appStore.setLanguage(
+  //         getStringAsync(SELECTED_LANGUAGE_CODE,
+  //             defaultValue: DEFAULT_LANGUAGE),
+  //         context: context);
+  //     int themeModeIndex =
+  //         getIntAsync(THEME_MODE_INDEX, defaultValue: THEME_MODE_SYSTEM);
+  //     if (themeModeIndex == THEME_MODE_SYSTEM) {
+  //       appStore.setDarkMode(
+  //           MediaQuery.of(context).platformBrightness == Brightness.dark);
+  //     }
+  //
+  //     if (appConfigurationStore.maintenanceModeStatus) {
+  //       MaintenanceModeScreen()
+  //           .launch(context, pageRouteAnimation: PageRouteAnimation.Fade);
+  //     } else {
+  //     // Check if the user is unauthorized and logged in, then clear preferences and cached data.
+  //     // This condition occurs when the user is marked as inactive from the admin panel,
+  //     if (!appConfigurationStore.isUserAuthorized && appStore.isLoggedIn) {
+  //       await clearPreferences();
+  //     }
+  //
+  //     if (!appStore.isLoggedIn || appStore.userId.toString().isEmpty) {
+  //       await updateProfilePhoto();
+  //       log('User ID: ${appStore.userId}');
+  //       print('User ID: ${appStore.userId}');
+  //       SignInScreen().launch(context, isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+  //     }
+  //     else {
+  //       await updateProfilePhoto();
+  //       log('User ID2: ${appStore.userId}');
+  //       print('User ID2: ${appStore.userId}');
+  //       if (isUserTypeProvider) {
+  //         ProviderDashboardScreen(index: 0).launch(context, isNewTask: true);
+  //       } else if (isUserTypeHandyman) {
+  //         HandymanDashboardScreen(index: 0).launch(context, isNewTask: true);
+  //       }
+  //       else {
+  //         SignInScreen().launch(context, isNewTask: true);
+  //       }
+  //     }
+  //
+  //     }
+  //   }
+  // }
   Future<void> init() async {
-    ///Set app configurations
+    /// Set app configurations
     await getAppConfigurations().then((value) {}).catchError((e) async {
       if (!await isNetworkAvailable()) {
         toast(errorInternetNotAvailable);
@@ -50,11 +108,10 @@ class SplashScreenState extends State<SplashScreen> {
       setState(() {});
     } else {
       appStore.setLanguage(
-          getStringAsync(SELECTED_LANGUAGE_CODE,
-              defaultValue: DEFAULT_LANGUAGE),
+          getStringAsync(SELECTED_LANGUAGE_CODE, defaultValue: DEFAULT_LANGUAGE),
           context: context);
       int themeModeIndex =
-          getIntAsync(THEME_MODE_INDEX, defaultValue: THEME_MODE_SYSTEM);
+      getIntAsync(THEME_MODE_INDEX, defaultValue: THEME_MODE_SYSTEM);
       if (themeModeIndex == THEME_MODE_SYSTEM) {
         appStore.setDarkMode(
             MediaQuery.of(context).platformBrightness == Brightness.dark);
@@ -64,24 +121,34 @@ class SplashScreenState extends State<SplashScreen> {
         MaintenanceModeScreen()
             .launch(context, pageRouteAnimation: PageRouteAnimation.Fade);
       } else {
-      // Check if the user is unauthorized and logged in, then clear preferences and cached data.
-      // This condition occurs when the user is marked as inactive from the admin panel,
-      if (!appConfigurationStore.isUserAuthorized && appStore.isLoggedIn) {
-        await clearPreferences();
-      }
-        if (!appStore.isLoggedIn) {
-          SignInScreen().launch(context,
-              isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+        // Check if the user is unauthorized and logged in, then clear preferences and cached data.
+        if (!appConfigurationStore.isUserAuthorized && appStore.isLoggedIn) {
+          await clearPreferences();
+        }
+
+        // Log User ID before making decisions
+        if (appStore.userId.toString().isNotEmpty) {
+          log('User ID Available: ${appStore.userId}');
+          print('User ID Available: ${appStore.userId}');
+        } else {
+          log('User ID Not Found');
+          print('User ID Not Found');
+        }
+
+        // Add the requested if condition
+        if (!appStore.isLoggedIn || appStore.userId.toString().isEmpty) {
+          await updateProfilePhoto();
+          log('Navigating to SignInScreen');
+          SignInScreen().launch(context, isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
         } else {
           await updateProfilePhoto();
+          log('User ID2 Available: ${appStore.userId}');
+          print('User ID2 Available: ${appStore.userId}');
+
           if (isUserTypeProvider) {
-            setStatusBarColor(primaryColor);
-            ProviderDashboardScreen(index: 0).launch(context,
-                isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+            ProviderDashboardScreen(index: 0).launch(context, isNewTask: true);
           } else if (isUserTypeHandyman) {
-            setStatusBarColor(primaryColor);
-            HandymanDashboardScreen(index: 0).launch(context,
-                isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+            HandymanDashboardScreen(index: 0).launch(context, isNewTask: true);
           } else {
             SignInScreen().launch(context, isNewTask: true);
           }

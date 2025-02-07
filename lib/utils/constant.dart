@@ -77,6 +77,7 @@ const IS_FIRST_TIME = 'IsFirstTime';
 const IS_LOGGED_IN = 'IS_LOGGED_IN';
 const IS_TESTER = 'IS_TESTER';
 const USER_ID = 'USER_ID';
+const LOGIN_TYPE = 'LOGIN_TYPE';
 const USER_TYPE = 'USER_TYPE';
 const FIRST_NAME = 'FIRST_NAME';
 const LAST_NAME = 'LAST_NAME';

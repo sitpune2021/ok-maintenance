@@ -360,6 +360,12 @@ class LanguageAr extends Languages {
   String get hintRequired => 'هذه الخانة مطلوبه';
 
   @override
+  String get hintInvalidEmail => 'البريد الإلكتروني غير صالح';
+
+  @override
+  String get hintInvalidMobile => 'رقم الهاتف غير صالح';
+
+  @override
   String get lblUnAuthorized => "لا يمكن منح المستخدم التجريبي لهذا الإجراء";
 
   @override

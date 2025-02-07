@@ -360,6 +360,12 @@ class LanguageFr extends Languages {
   String get hintRequired => 'Ce champ est requis';
 
   @override
+  String get hintInvalidEmail => 'E-mail invalide';
+
+  @override
+  String get hintInvalidMobile => 'Numéro de mobile invalide';
+
+  @override
   String get lblUnAuthorized => "L'utilisateur de démonstration ne peut être accordé pour cette action";
 
   @override

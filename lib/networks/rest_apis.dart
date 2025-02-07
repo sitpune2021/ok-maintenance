@@ -181,8 +181,25 @@ Future<void> logoutApi() async {
   return await handleResponse(await buildHttpResponse('logout', method: HttpMethodType.GET));
 }
 
+// Future<RegisterResponse> registerUser(Map request) async {
+//   return RegisterResponse.fromJson(await (handleResponse(await buildHttpResponse('register', request: request, method: HttpMethodType.POST))));
+// }
+
 Future<RegisterResponse> registerUser(Map request) async {
-  return RegisterResponse.fromJson(await (handleResponse(await buildHttpResponse('register', request: request, method: HttpMethodType.POST))));
+  final response = await buildHttpResponse('register', request: request, method: HttpMethodType.POST);
+  print('Raw Response: $response'); // Debug print raw response
+
+  final parsedResponse = await handleResponse(response); // Await the future
+  print('Parsed Response: $parsedResponse'); // Debug print parsed response
+
+  if (parsedResponse is! Map<String, dynamic>) {
+    throw Exception("Unexpected response format: $parsedResponse");
+  }
+
+  final registerResponse = RegisterResponse.fromJson(parsedResponse);
+  print('Register Response: ${registerResponse.toJson()}'); // Debug print final response
+
+  return registerResponse;
 }
 
 Future changeLanguage(Map request) async {

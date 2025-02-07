@@ -359,6 +359,12 @@ class LanguageEn extends Languages {
   String get hintRequired => 'This field is required';
 
   @override
+  String get hintInvalidEmail => 'Invalid Email';
+
+
+  String get hintInvalidMobile => 'Invalid Mobile';
+
+  @override
   String get lblUnAuthorized => "Demo user cannot be granted for this action";
 
   @override
@@ -1631,8 +1637,11 @@ class LanguageEn extends Languages {
   @override
   String get copied => 'Copied';
 
+  // @override
+  // String get pleaseContactYourAdmin => 'Your account is inactive. Please contact system administrator.';
+  //
   @override
-  String get pleaseContactYourAdmin => 'Your account is inactive. Please contact system administrator.';
+  String get pleaseContactYourAdmin => 'Process of admin approval, once approved will update you. ';
 
   @override
   String get search => 'Search';

@@ -33,6 +33,9 @@ abstract class _AppStore with Store {
   int userId = getIntAsync(USER_ID);
 
   @observable
+  String loginType = getStringAsync(LOGIN_TYPE);
+
+  @observable
   String userFirstName = getStringAsync(FIRST_NAME);
 
   @observable
@@ -173,7 +176,11 @@ abstract class _AppStore with Store {
   void setTotalHandyman(int val) {
     totalHandyman = val;
   }
-
+  @action
+  Future<void> setLoginType(String val) async {
+    loginType = val;
+    await setValue(LOGIN_TYPE, val);
+  }
   @action
   void setSelectedServiceData(ServiceData data) {
     selectedServiceData = data;

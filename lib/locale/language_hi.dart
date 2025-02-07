@@ -360,6 +360,12 @@ class LanguageHi extends Languages {
   String get hintRequired => 'यह फ़ील्ड आवश्यक है';
 
   @override
+  String get hintInvalidEmail => 'अमान्य ईमेल';
+
+  @override
+  String get hintInvalidMobile => 'अमान्य मोबाइल नंबर';
+
+  @override
   String get lblUnAuthorized => "डेमो उपयोगकर्ता को इस क्रिया के लिए नहीं दिया जा सकता है";
 
   @override

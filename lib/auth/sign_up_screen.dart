@@ -210,6 +210,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
           focus: emailFocus,
           nextFocus: mobileFocus,
           errorThisFieldRequired: languages.hintRequired,
+          validator: (value) {
+            if (value!.isEmpty) {
+              return languages.hintRequired;
+            } else if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value)) {
+              return languages.hintInvalidEmail;
+            }
+            return null;
+          },
           decoration: inputDecoration(context, hint: languages.hintEmailAddressTxt),
           suffix: ic_message.iconImage(size: 10).paddingAll(14),
         ),
@@ -245,30 +253,52 @@ class _SignUpScreenState extends State<SignUpScreen> {
               textFieldType: isAndroid ? TextFieldType.PHONE : TextFieldType.NAME,
               controller: mobileCont,
               focus: mobileFocus,
-              isValidationRequired: false,
+              isValidationRequired: true,
               errorThisFieldRequired: languages.hintRequired,
+              // validator: (value) {
+              //   if (value!.isEmpty) {
+              //     return languages.hintRequired;
+              //   } else if (value.length != 10 || !RegExp(r"^[6-9]\d{9}$").hasMatch(value)) {
+              //     return languages.hintInvalidMobile;
+              //   }
+              //   return null;
+              // },
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return languages.hintRequired; // Field is required
+                }
+                if (selectedCountry.phoneCode == "+91" && value.length != 10) {
+                  return "Please enter a valid 10-digit mobile number."; // Validation for India
+                }
+
+                // Check if the value is exactly 10 digits
+                if (value.length != 10) {
+                  return "Please enter a valid 10-digit mobile number."; // Error if it's not exactly 10 digits
+                }
+                return null; // No error
+              },
               nextFocus: passwordFocus,
               decoration: inputDecoration(context, hint: '${languages.hintContactNumberTxt}').copyWith(
                 hintText: '${languages.lblExample}: ${selectedCountry.example}',
                 hintStyle: secondaryTextStyle(),
               ),
-              maxLength: 15,
+              maxLength: 10,
               suffix: calling.iconImage(size: 10).paddingAll(14),
             ).expand(),
           ],
         ),
         8.height,
-        // Designation text field...
-        AppTextField(
-          textFieldType: TextFieldType.USERNAME,
-          controller: designationCont,
-          isValidationRequired: false,
-          focus: designationFocus,
-          nextFocus: passwordFocus,
-          decoration: inputDecoration(context, hint: languages.lblDesignation),
-          suffix: profile.iconImage(size: 10).paddingAll(14),
-        ),
-        16.height,
+        /// Designation text field...
+        // AppTextField(
+        //   textFieldType: TextFieldType.USERNAME,
+        //   controller: designationCont,
+        //   isValidationRequired: false,
+        //   focus: designationFocus,
+        //   nextFocus: passwordFocus,
+        //   decoration: inputDecoration(context, hint: languages.lblDesignation),
+        //   suffix: profile.iconImage(size: 10).paddingAll(14),
+        // ),
+        // 16.height,
         // User role text field...
         ValueListenableBuilder(
           valueListenable: _valueNotifier,
@@ -440,6 +470,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
           suffixPasswordVisibleWidget: ic_show.iconImage(size: 10).paddingAll(14),
           suffixPasswordInvisibleWidget: ic_hide.iconImage(size: 10).paddingAll(14),
           errorThisFieldRequired: languages.hintRequired,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return languages.hintRequired;
+            }
+            if (value.length < 8) {
+              return "Password must be at least 8 characters long.";
+            }
+            return null;
+          },
           decoration: inputDecoration(context, hint: languages.hintPassword),
           onFieldSubmitted: (s) {
             saveUser();
