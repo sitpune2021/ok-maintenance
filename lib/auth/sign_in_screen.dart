@@ -550,7 +550,7 @@ class _SignInScreenState extends State<SignInScreen> {
       // Set the user ID in the appStore
       appStore.setUserId(res.id.validate());
       print('User ID set in appStore: ${appStore.userId}');
-      if (res.userType.validate().trim() == USER_TYPE_PROVIDER) {
+      if (res.userType.validate().trim() == USER_TYPE_PROVIDER ) {
         ProviderDashboardScreen(index: 0).launch(context, isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
       } else if (res.userType.validate().trim() == USER_TYPE_HANDYMAN || res.userType.validate().trim() == IS_USER) {
         HandymanDashboardScreen().launch(context, isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);

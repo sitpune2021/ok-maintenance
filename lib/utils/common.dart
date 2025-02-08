@@ -53,6 +53,8 @@ bool get isUserTypeHandyman => appStore.userType == USER_TYPE_HANDYMAN;
 
 bool get isUserTypeProvider => appStore.userType == USER_TYPE_PROVIDER;
 
+bool get isUserTypeUser => appStore.userType == IS_USER;
+
 Future<void> setSaveSubscription({int? isSubscribe, String? title, String? identifier, String? endAt}) async {
   await appStore.setPlanTitle(title ?? getStringAsync(PLAN_TITLE));
   await appStore.setIdentifier(identifier ?? getStringAsync(PLAN_IDENTIFIER));

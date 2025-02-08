@@ -83,6 +83,8 @@ dependencies:
   custom_map_markers: ^0.0.2+1
   permission_handler: ^11.3.1
   share_plus: ^10.0.3
+#  flutter_typeahead: ^4.5.1
+
 
 
 dev_dependencies:

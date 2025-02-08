@@ -140,7 +140,8 @@ class SplashScreenState extends State<SplashScreen> {
           await updateProfilePhoto();
           log('Navigating to SignInScreen');
           SignInScreen().launch(context, isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
-        } else {
+        } else
+        {
           await updateProfilePhoto();
           log('User ID2 Available: ${appStore.userId}');
           print('User ID2 Available: ${appStore.userId}');
@@ -149,7 +150,10 @@ class SplashScreenState extends State<SplashScreen> {
             ProviderDashboardScreen(index: 0).launch(context, isNewTask: true);
           } else if (isUserTypeHandyman) {
             HandymanDashboardScreen(index: 0).launch(context, isNewTask: true);
-          } else {
+          }else if(isUserTypeUser){
+            HandymanDashboardScreen(index: 0).launch(context, isNewTask: true);
+          }
+          else {
             SignInScreen().launch(context, isNewTask: true);
           }
         }

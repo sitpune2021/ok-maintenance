@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+// import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:handyman_provider_flutter/components/add_known_languages_component.dart';
 import 'package:handyman_provider_flutter/components/app_widgets.dart';
@@ -567,14 +568,15 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                             ).expand(),
                           ],
                         ),
-                        16.height,
-                        AppTextField(
-                          textFieldType: TextFieldType.NAME,
-                          controller: designationCont,
-                          isValidationRequired: false,
-                          focus: designationFocus,
-                          decoration: inputDecoration(context, hint: languages.lblDesignation),
-                        ),
+                        /// designation
+                        // 16.height,
+                        // AppTextField(
+                        //   textFieldType: TextFieldType.NAME,
+                        //   controller: designationCont,
+                        //   isValidationRequired: false,
+                        //   focus: designationFocus,
+                        //   decoration: inputDecoration(context, hint: languages.lblDesignation),
+                        // ),
                         16.height,
                         Row(
                           children: [
@@ -625,6 +627,70 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                               ).expand(),
                           ],
                         ),
+
+
+        // Row(
+        //   children: [
+        //     Expanded(
+        //       child: TypeAheadFormField<CountryListResponse>(
+        //         textFieldConfiguration: TextFieldConfiguration(
+        //           decoration: InputDecoration(
+        //             labelText: "Select Country",
+        //             border: OutlineInputBorder(),
+        //           ),
+        //         ),
+        //         suggestionsCallback: (pattern) {
+        //           return countryList
+        //               .where((country) => country.name!.toLowerCase().contains(pattern.toLowerCase()))
+        //               .toList();
+        //         },
+        //         itemBuilder: (context, CountryListResponse suggestion) {
+        //           return ListTile(
+        //             title: Text(suggestion.name!),
+        //           );
+        //         },
+        //         onSuggestionSelected: (CountryListResponse suggestion) {
+        //           setState(() {
+        //             selectedCountry = suggestion;
+        //             countryId = suggestion.id!;
+        //             selectedState = null;
+        //           });
+        //           getStates(suggestion.id!);
+        //         },
+        //       ),
+        //     ),
+        //     SizedBox(width: 8),
+        //     if (stateList.isNotEmpty)
+        //       Expanded(
+        //         child: TypeAheadFormField<StateListResponse>(
+        //           textFieldConfiguration: TextFieldConfiguration(
+        //             decoration: InputDecoration(
+        //               labelText: "Select State",
+        //               border: OutlineInputBorder(),
+        //             ),
+        //           ),
+        //           suggestionsCallback: (pattern) {
+        //             return stateList
+        //                 .where((state) => state.name!.toLowerCase().contains(pattern.toLowerCase()))
+        //                 .toList();
+        //           },
+        //           itemBuilder: (context, StateListResponse suggestion) {
+        //             return ListTile(
+        //               title: Text(suggestion.name!),
+        //             );
+        //           },
+        //           onSuggestionSelected: (StateListResponse suggestion) {
+        //             setState(() {
+        //               selectedState = suggestion;
+        //               stateId = suggestion.id!;
+        //             });
+        //             getCity(suggestion.id!);
+        //           },
+        //         ),
+        //       ),
+        //   ],
+        // ),
+
                         16.height,
                         if (cityList.isNotEmpty)
                           Column(
