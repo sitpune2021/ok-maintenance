@@ -35,6 +35,9 @@ import '../components/add_reasons_component.dart';
 import '../components/add_skill_component.dart';
 import '../components/chat_gpt_loder.dart';
 import '../models/user_update_response.dart';
+import 'package:dropdown_search/dropdown_search.dart';
+import 'package:http/http.dart' as http;
+
 
 class EditProfileScreen extends StatefulWidget {
   @override
@@ -72,6 +75,11 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   TextEditingController skillsCont = TextEditingController();
   TextEditingController descriptionCont = TextEditingController();
   TextEditingController whyChooseMeCont = TextEditingController();
+
+  TextEditingController pinCodeCont = TextEditingController();
+  String placeName = '';
+  String pinCodeError = '';
+
 
   FocusNode fNameFocus = FocusNode();
   FocusNode lNameFocus = FocusNode();
@@ -150,7 +158,33 @@ class EditProfileScreenState extends State<EditProfileScreen> {
       await getCountry();
     }
   }
+// Function to fetch place details from Pin Code
+  Future<void> getPlaceFromPinCode(String pinCode) async {
+    final apiKey = 'AIzaSyD9XZBYlnwfrKQ1ZK-EUxJtFePKXW_1sfE';  // Use your API key
+    final url = 'https://maps.googleapis.com/maps/api/geocode/json?address=$pinCode&key=$apiKey';
 
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (data['results'].isNotEmpty) {
+        // Extract formatted address
+        setState(() {
+          placeName = data['results'][0]['formatted_address'];
+          pinCodeError = '';
+        });
+      } else {
+        setState(() {
+          pinCodeError = 'Invalid pin code';
+          placeName = '';
+        });
+      }
+    } else {
+      setState(() {
+        pinCodeError = 'Failed to fetch location';
+        placeName = '';
+      });
+    }
+  }
   Future<void> userDetailAPI() async {
     await getUserDetail(appStore.userId).then((value) async {
       String tempLanguages = value.data!.knownLanguages.validate();
@@ -435,13 +469,13 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                                 child: imageFile != null
                                     ? Image.file(imageFile!, width: 90, height: 90, fit: BoxFit.cover).cornerRadiusWithClipRRect(45)
                                     : Observer(
-                                        builder: (_) => CachedImageWidget(
-                                          url: appStore.userProfileImage,
-                                          height: 100,
-                                          fit: BoxFit.cover,
-                                          radius: 64,
-                                        ),
-                                      ),
+                                  builder: (_) => CachedImageWidget(
+                                    url: appStore.userProfileImage,
+                                    height: 100,
+                                    fit: BoxFit.cover,
+                                    radius: 64,
+                                  ),
+                                ),
                               ),
                               Positioned(
                                 bottom: 4,
@@ -521,7 +555,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                                 )
                             ],
                           ).paddingSymmetric(horizontal: 6).onTap(
-                            () {
+                                () {
                               verifyEmail();
                             },
                             borderRadius: radius(),
@@ -578,20 +612,71 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                         //   decoration: inputDecoration(context, hint: languages.lblDesignation),
                         // ),
                         16.height,
+                        // Row(
+                        //   children: [
+                        //     DropdownButtonFormField<CountryListResponse>(
+                        //       decoration: inputDecoration(context, hint: languages.selectCountry),
+                        //       isExpanded: true,
+                        //       menuMaxHeight: 300,
+                        //       value: selectedCountry,
+                        //       dropdownColor: context.cardColor,
+                        //       items: countryList.map((CountryListResponse e) {
+                        //         return DropdownMenuItem<CountryListResponse>(
+                        //           value: e,
+                        //           child: Text(e.name!, style: primaryTextStyle(), maxLines: 1, overflow: TextOverflow.ellipsis),
+                        //         );
+                        //       }).toList(),
+                        //       onChanged: (CountryListResponse? value) async {
+                        //         countryId = value!.id!;
+                        //         selectedCountry = value;
+                        //         selectedState = null;
+                        //         selectedCity = null;
+                        //         setState(() {});
+                        //
+                        //         getStates(value.id!);
+                        //       },
+                        //     ).expand(),
+                        //     8.width.visible(stateList.isNotEmpty),
+                        //     if (stateList.isNotEmpty)
+                        //       DropdownButtonFormField<StateListResponse>(
+                        //         decoration: inputDecoration(context, hint: languages.selectState),
+                        //         isExpanded: true,
+                        //         dropdownColor: context.cardColor,
+                        //         menuMaxHeight: 300,
+                        //         value: selectedState,
+                        //         items: stateList.map((StateListResponse e) {
+                        //           return DropdownMenuItem<StateListResponse>(
+                        //             value: e,
+                        //             child: Text(e.name!, style: primaryTextStyle(), maxLines: 1, overflow: TextOverflow.ellipsis),
+                        //           );
+                        //         }).toList(),
+                        //         onChanged: (StateListResponse? value) async {
+                        //           selectedCity = null;
+                        //           selectedState = value;
+                        //           stateId = value!.id!;
+                        //           setState(() {});
+                        //
+                        //           getCity(value.id!);
+                        //         },
+                        //       ).expand(),
+                        //   ],
+                        // ),
                         Row(
                           children: [
-                            DropdownButtonFormField<CountryListResponse>(
-                              decoration: inputDecoration(context, hint: languages.selectCountry),
-                              isExpanded: true,
-                              menuMaxHeight: 300,
-                              value: selectedCountry,
-                              dropdownColor: context.cardColor,
-                              items: countryList.map((CountryListResponse e) {
-                                return DropdownMenuItem<CountryListResponse>(
-                                  value: e,
-                                  child: Text(e.name!, style: primaryTextStyle(), maxLines: 1, overflow: TextOverflow.ellipsis),
-                                );
-                              }).toList(),
+                            // Country Selection
+                            DropdownSearch<CountryListResponse>(
+                              popupProps: PopupProps.menu(
+                                showSearchBox: true,  // Enables search
+                                searchFieldProps: TextFieldProps(
+                                  decoration: inputDecoration(context, hint: "Search Country"),
+                                ),
+                              ),
+                              dropdownDecoratorProps: DropDownDecoratorProps(
+                                dropdownSearchDecoration: inputDecoration(context, hint: languages.selectCountry),
+                              ),
+                              selectedItem: selectedCountry,
+                              itemAsString: (CountryListResponse? c) => c!.name!,
+                              items: countryList,
                               onChanged: (CountryListResponse? value) async {
                                 countryId = value!.id!;
                                 selectedCountry = value;
@@ -602,20 +687,23 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                                 getStates(value.id!);
                               },
                             ).expand(),
+
                             8.width.visible(stateList.isNotEmpty),
+
                             if (stateList.isNotEmpty)
-                              DropdownButtonFormField<StateListResponse>(
-                                decoration: inputDecoration(context, hint: languages.selectState),
-                                isExpanded: true,
-                                dropdownColor: context.cardColor,
-                                menuMaxHeight: 300,
-                                value: selectedState,
-                                items: stateList.map((StateListResponse e) {
-                                  return DropdownMenuItem<StateListResponse>(
-                                    value: e,
-                                    child: Text(e.name!, style: primaryTextStyle(), maxLines: 1, overflow: TextOverflow.ellipsis),
-                                  );
-                                }).toList(),
+                              DropdownSearch<StateListResponse>(
+                                popupProps: PopupProps.menu(
+                                  showSearchBox: true,
+                                  searchFieldProps: TextFieldProps(
+                                    decoration: inputDecoration(context, hint: "Search State"),
+                                  ),
+                                ),
+                                dropdownDecoratorProps: DropDownDecoratorProps(
+                                  dropdownSearchDecoration: inputDecoration(context, hint: languages.selectState),
+                                ),
+                                selectedItem: selectedState,
+                                itemAsString: (StateListResponse? s) => s!.name!,
+                                items: stateList,
                                 onChanged: (StateListResponse? value) async {
                                   selectedCity = null;
                                   selectedState = value;
@@ -629,91 +717,111 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                         ),
 
 
-        // Row(
-        //   children: [
-        //     Expanded(
-        //       child: TypeAheadFormField<CountryListResponse>(
-        //         textFieldConfiguration: TextFieldConfiguration(
-        //           decoration: InputDecoration(
-        //             labelText: "Select Country",
-        //             border: OutlineInputBorder(),
-        //           ),
-        //         ),
-        //         suggestionsCallback: (pattern) {
-        //           return countryList
-        //               .where((country) => country.name!.toLowerCase().contains(pattern.toLowerCase()))
-        //               .toList();
-        //         },
-        //         itemBuilder: (context, CountryListResponse suggestion) {
-        //           return ListTile(
-        //             title: Text(suggestion.name!),
-        //           );
-        //         },
-        //         onSuggestionSelected: (CountryListResponse suggestion) {
-        //           setState(() {
-        //             selectedCountry = suggestion;
-        //             countryId = suggestion.id!;
-        //             selectedState = null;
-        //           });
-        //           getStates(suggestion.id!);
-        //         },
-        //       ),
-        //     ),
-        //     SizedBox(width: 8),
-        //     if (stateList.isNotEmpty)
-        //       Expanded(
-        //         child: TypeAheadFormField<StateListResponse>(
-        //           textFieldConfiguration: TextFieldConfiguration(
-        //             decoration: InputDecoration(
-        //               labelText: "Select State",
-        //               border: OutlineInputBorder(),
-        //             ),
-        //           ),
-        //           suggestionsCallback: (pattern) {
-        //             return stateList
-        //                 .where((state) => state.name!.toLowerCase().contains(pattern.toLowerCase()))
-        //                 .toList();
-        //           },
-        //           itemBuilder: (context, StateListResponse suggestion) {
-        //             return ListTile(
-        //               title: Text(suggestion.name!),
-        //             );
-        //           },
-        //           onSuggestionSelected: (StateListResponse suggestion) {
-        //             setState(() {
-        //               selectedState = suggestion;
-        //               stateId = suggestion.id!;
-        //             });
-        //             getCity(suggestion.id!);
-        //           },
-        //         ),
-        //       ),
-        //   ],
-        // ),
+
+                        // Row(
+                        //   children: [
+                        //     Expanded(
+                        //       child: TypeAheadFormField<CountryListResponse>(
+                        //         textFieldConfiguration: TextFieldConfiguration(
+                        //           decoration: InputDecoration(
+                        //             labelText: "Select Country",
+                        //             border: OutlineInputBorder(),
+                        //           ),
+                        //         ),
+                        //         suggestionsCallback: (pattern) {
+                        //           return countryList
+                        //               .where((country) => country.name!.toLowerCase().contains(pattern.toLowerCase()))
+                        //               .toList();
+                        //         },
+                        //         itemBuilder: (context, CountryListResponse suggestion) {
+                        //           return ListTile(
+                        //             title: Text(suggestion.name!),
+                        //           );
+                        //         },
+                        //         onSuggestionSelected: (CountryListResponse suggestion) {
+                        //           setState(() {
+                        //             selectedCountry = suggestion;
+                        //             countryId = suggestion.id!;
+                        //             selectedState = null;
+                        //           });
+                        //           getStates(suggestion.id!);
+                        //         },
+                        //       ),
+                        //     ),
+                        //     SizedBox(width: 8),
+                        //     if (stateList.isNotEmpty)
+                        //       Expanded(
+                        //         child: TypeAheadFormField<StateListResponse>(
+                        //           textFieldConfiguration: TextFieldConfiguration(
+                        //             decoration: InputDecoration(
+                        //               labelText: "Select State",
+                        //               border: OutlineInputBorder(),
+                        //             ),
+                        //           ),
+                        //           suggestionsCallback: (pattern) {
+                        //             return stateList
+                        //                 .where((state) => state.name!.toLowerCase().contains(pattern.toLowerCase()))
+                        //                 .toList();
+                        //           },
+                        //           itemBuilder: (context, StateListResponse suggestion) {
+                        //             return ListTile(
+                        //               title: Text(suggestion.name!),
+                        //             );
+                        //           },
+                        //           onSuggestionSelected: (StateListResponse suggestion) {
+                        //             setState(() {
+                        //               selectedState = suggestion;
+                        //               stateId = suggestion.id!;
+                        //             });
+                        //             getCity(suggestion.id!);
+                        //           },
+                        //         ),
+                        //       ),
+                        //   ],
+                        // ),
 
                         16.height,
                         if (cityList.isNotEmpty)
                           Column(
                             children: [
-                              DropdownButtonFormField<CityListResponse>(
-                                decoration: inputDecoration(context),
-                                hint: Text(languages.selectCity, style: primaryTextStyle()),
-                                isExpanded: true,
-                                menuMaxHeight: 400,
-                                value: selectedCity,
-                                dropdownColor: context.cardColor,
-                                items: cityList.map(
-                                  (CityListResponse e) {
-                                    return DropdownMenuItem<CityListResponse>(
-                                      value: e,
-                                      child: Text(e.name!, style: primaryTextStyle(), maxLines: 1, overflow: TextOverflow.ellipsis),
-                                    );
-                                  },
-                                ).toList(),
+                              // DropdownButtonFormField<CityListResponse>(
+                              //   decoration: inputDecoration(context),
+                              //   hint: Text(languages.selectCity, style: primaryTextStyle()),
+                              //   isExpanded: true,
+                              //   menuMaxHeight: 400,
+                              //   value: selectedCity,
+                              //   dropdownColor: context.cardColor,
+                              //   items: cityList.map(
+                              //     (CityListResponse e) {
+                              //       return DropdownMenuItem<CityListResponse>(
+                              //         value: e,
+                              //         child: Text(e.name!, style: primaryTextStyle(), maxLines: 1, overflow: TextOverflow.ellipsis),
+                              //       );
+                              //     },
+                              //   ).toList(),
+                              //   onChanged: (CityListResponse? value) async {
+                              //     selectedCity = value;
+                              //     cityId = value!.id!;
+                              //
+                              //     setState(() {});
+                              //   },
+                              // ),
+                              DropdownSearch<CityListResponse>(
+                                popupProps: PopupProps.menu(
+                                  showSearchBox: true,
+                                  searchFieldProps: TextFieldProps(
+                                    decoration: inputDecoration(context, hint: "Search City"),
+                                  ),
+                                ),
+                                dropdownDecoratorProps: DropDownDecoratorProps(
+                                  dropdownSearchDecoration: inputDecoration(context, hint: languages.selectCity),
+                                ),
+                                selectedItem: selectedCity,
+                                itemAsString: (CityListResponse? c) => c!.name!,
+                                items: cityList,
                                 onChanged: (CityListResponse? value) async {
                                   selectedCity = value;
                                   cityId = value!.id!;
-
                                   setState(() {});
                                 },
                               ),
@@ -746,10 +854,86 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                           focus: addressFocus,
                           minLines: 3,
                           decoration: inputDecoration(context, hint: languages.hintAddress),
+
                         ),
+
+
                         16.height,
                         Text(languages.knownLanguages, style: secondaryTextStyle()),
                         8.height,
+                        // Wrap(
+                        //   children: knownLanguages.map((e) {
+                        //     return Stack(
+                        //       children: [
+                        //         Container(
+                        //           decoration: boxDecorationWithRoundedCorners(
+                        //             borderRadius: BorderRadius.all(Radius.circular(16)),
+                        //             backgroundColor: appStore.isDarkMode ? cardDarkColor : primaryColor.withOpacity(0.1),
+                        //           ),
+                        //           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        //           margin: EdgeInsets.all(4),
+                        //           child: Text(e, style: primaryTextStyle()),
+                        //         ),
+                        //         Positioned(
+                        //           right: 1,
+                        //           child: Icon(
+                        //             Icons.cancel,
+                        //             color: Colors.red,
+                        //           ).onTap(() {
+                        //             knownLanguages.remove(e);
+                        //             setState(() {});
+                        //           }),
+                        //         ),
+                        //       ],
+                        //     );
+                        //   }).toList(),
+                        // ),
+                        // TextButton(
+                        //   onPressed: () async {
+                        //     String? res = await showInDialog(
+                        //       context,
+                        //       contentPadding: EdgeInsets.zero,
+                        //       builder: (p0) {
+                        //         return AddKnownLanguagesComponent();
+                        //       },
+                        //     );
+                        //
+                        //     if (res != null) {
+                        //       knownLanguages.add(res.trim());
+                        //       setState(() {});
+                        //     }
+                        //   },
+                        //   child: Text(languages.addKnownLanguage, style: primaryTextStyle(color: context.primaryColor)),
+                        // ),
+                        // 16.height,
+                        TextButton(
+                          onPressed: () async {
+                            String? res = await showInDialog(
+                              context,
+                              contentPadding: EdgeInsets.zero,
+                              builder: (p0) {
+                                return AddKnownLanguagesComponent();
+                              },
+                            );
+
+                            if (res != null) {
+                              // Split the comma-separated string into individual languages
+                              List<String> selectedLanguages = res.split(',').map((lang) => lang.trim()).toList();
+
+                              // Add the selected languages to the knownLanguages list
+                              knownLanguages.addAll(selectedLanguages);
+
+                              // Update the UI
+                              setState(() {});
+                            }
+                          },
+                          child: Text(
+                            languages.addKnownLanguage,
+                            style: primaryTextStyle(color: context.primaryColor),
+                          ),
+                        ),
+
+// Display the selected languages separately
                         Wrap(
                           children: knownLanguages.map((e) {
                             return Stack(
@@ -777,24 +961,6 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                             );
                           }).toList(),
                         ),
-                        TextButton(
-                          onPressed: () async {
-                            String? res = await showInDialog(
-                              context,
-                              contentPadding: EdgeInsets.zero,
-                              builder: (p0) {
-                                return AddKnownLanguagesComponent();
-                              },
-                            );
-
-                            if (res != null) {
-                              knownLanguages.add(res.trim());
-                              setState(() {});
-                            }
-                          },
-                          child: Text(languages.addKnownLanguage, style: primaryTextStyle(color: context.primaryColor)),
-                        ),
-                        16.height,
                         Text(languages.essentialSkills, style: secondaryTextStyle()),
                         8.height,
                         Wrap(

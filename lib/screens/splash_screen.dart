@@ -151,7 +151,7 @@ class SplashScreenState extends State<SplashScreen> {
           } else if (isUserTypeHandyman) {
             HandymanDashboardScreen(index: 0).launch(context, isNewTask: true);
           }else if(isUserTypeUser){
-            HandymanDashboardScreen(index: 0).launch(context, isNewTask: true);
+            ProviderDashboardScreen(index: 0).launch(context, isNewTask: true);
           }
           else {
             SignInScreen().launch(context, isNewTask: true);

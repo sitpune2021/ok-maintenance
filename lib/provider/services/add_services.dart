@@ -402,6 +402,7 @@ class _AddServicesState extends State<AddServices> {
                     errorThisFieldRequired: languages.hintRequired,
                     decoration: inputDecoration(
                       context,
+                      // hint: languages.lblDurationMin,
                       hint: languages.lblDurationMin,
                       fillColor: context.scaffoldBackgroundColor,
                       counterText: '',
@@ -426,7 +427,7 @@ class _AddServicesState extends State<AddServices> {
               errorThisFieldRequired: languages.hintRequired,
               decoration: inputDecoration(
                 context,
-                hint: languages.hintDescription,
+                hint: "write details about your service skill",
                 fillColor: context.scaffoldBackgroundColor,
               ),
             ),

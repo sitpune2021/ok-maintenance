@@ -84,6 +84,8 @@ dependencies:
   permission_handler: ^11.3.1
   share_plus: ^10.0.3
 #  flutter_typeahead: ^4.5.1
+  dropdown_search: ^5.0.6  # Latest version at the time of writing
+
 
 
 

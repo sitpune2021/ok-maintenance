@@ -116,6 +116,11 @@ class AddAddressKey {
   static String longitude = 'longitude';
   static String status = 'status';
   static String address = 'address';
+  static String state = 'state';
+  static String city = 'city';
+  static String stateId = 'stateId';
+  static String cityId = 'cityId';
+
 }
 
 class AddDocument {
