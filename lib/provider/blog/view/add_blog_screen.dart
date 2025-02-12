@@ -83,9 +83,9 @@ class _AddBlogScreenState extends State<AddBlogScreen> {
       formKey.currentState!.save();
       hideKeyboard(context);
 
-      if (imageFiles.isEmpty) {
-        return toast(languages.pleaseSelectImages);
-      }
+      // if (imageFiles.isEmpty) {
+      //   return toast(languages.pleaseSelectImages);
+      // }
 
       Map<String, dynamic> req = {
         CommonKeys.id: widget.data != null ? widget.data!.id.validate() : '',

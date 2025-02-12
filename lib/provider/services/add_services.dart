@@ -48,6 +48,12 @@ class _AddServicesState extends State<AddServices> {
   TextEditingController hoursCont = TextEditingController();
   TextEditingController miutesCont = TextEditingController();
 
+  TextEditingController predictivePreventivePriceCont = TextEditingController();
+  TextEditingController breakdownMaintenancePriceCont = TextEditingController();
+
+  FocusNode predictivePreventivePriceFocus = FocusNode();
+  FocusNode breakdownMaintenancePriceFocus = FocusNode();
+
   /// FocusNode
   FocusNode serviceNameFocus = FocusNode();
   FocusNode priceFocus = FocusNode();
@@ -138,6 +144,14 @@ class _AddServicesState extends State<AddServices> {
       timeSlotStore.initializeSlots(value: widget.data!.providerSlotData.validate());
 
       selectedVisitType = visitTypeData.firstWhere((element) => element.key == widget.data!.visitType.validate(), orElse: () => visitTypeData.first);
+
+      // Initialize new price fields
+      // predictivePreventivePriceCont.text = widget.data!.predictivePreventivePrice?.toString() ?? '';
+      // breakdownMaintenancePriceCont.text = widget.data!.breakdownMaintenancePrice?.toString() ?? '';
+
+      predictivePreventivePriceCont.text = '';
+      breakdownMaintenancePriceCont.text = '';
+
     }
 
     setState(() {});
@@ -172,7 +186,9 @@ class _AddServicesState extends State<AddServices> {
         AddServiceKey.status: serviceStatus.validate() == ACTIVE ? '1' : '0',
         AddServiceKey.duration: "${currentTime!.hour}:${currentTime!.minute}",
         AddServiceKey.visitType: selectedVisitType!.key,
-        AdvancePaymentKey.isEnableAdvancePayment: isAdvancePayment ? 1 : 0
+        AdvancePaymentKey.isEnableAdvancePayment: isAdvancePayment ? 1 : 0,
+        AddServiceKey.predictivePreventivePrice: predictivePreventivePriceCont.text,
+        AddServiceKey.breakdownMaintenancePrice: breakdownMaintenancePriceCont.text,
       };
 
       if (subCategoryId != -1) {
@@ -263,6 +279,101 @@ class _AddServicesState extends State<AddServices> {
                 serviceAddressList = val;
               },
             ),
+
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title and Info Button
+                Row(
+                  children: [
+                    Text(
+                      'Maintenance Types',
+                      style: boldTextStyle(size: 16),
+                    ),
+                    8.width,
+                    IconButton(
+                      icon: Icon(Icons.info_outline, size: 20),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text('Maintenance Types'),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Predictive & Preventive Maintenance: Regular maintenance to prevent unexpected breakdowns.',
+                                    style: secondaryTextStyle(),
+                                  ),
+                                  8.height,
+                                  Text(
+                                    'Breakdown Maintenance: Maintenance performed after a breakdown occurs.',
+                                    style: secondaryTextStyle(),
+                                  ),
+                                ],
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                ),
+                16.height,
+
+                // Predictive & Preventive Maintenance Price Field
+                AppTextField(
+                  textFieldType: TextFieldType.PHONE,
+                  controller: predictivePreventivePriceCont,
+                  focus: predictivePreventivePriceFocus,
+                  nextFocus: breakdownMaintenancePriceFocus,
+                  errorThisFieldRequired: languages.hintRequired,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: inputDecoration(
+                    context,
+                    hint: 'Predictive & Preventive Maintenance Price',
+                    fillColor: context.scaffoldBackgroundColor,
+                  ),
+                  validator: (s) {
+                    if (s!.isEmpty) return errorThisFieldRequired;
+                    if (s.toDouble() <= 0) return languages.priceAmountValidationMessage;
+                    return null;
+                  },
+                ),
+                16.height,
+
+                // Breakdown Maintenance Price Field
+                AppTextField(
+                  textFieldType: TextFieldType.PHONE,
+                  controller: breakdownMaintenancePriceCont,
+                  focus: breakdownMaintenancePriceFocus,
+                  nextFocus: descriptionFocus,
+                  errorThisFieldRequired: languages.hintRequired,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: inputDecoration(
+                    context,
+                    hint: 'Breakdown Maintenance Price',
+                    fillColor: context.scaffoldBackgroundColor,
+                  ),
+                  validator: (s) {
+                    if (s!.isEmpty) return errorThisFieldRequired;
+                    if (s.toDouble() <= 0) return languages.priceAmountValidationMessage;
+                    return null;
+                  },
+                ),
+              ],
+            ),
+
             Row(
               children: [
                 DropdownButtonFormField<StaticDataModel>(
@@ -686,8 +797,8 @@ class _AddServicesState extends State<AddServices> {
                   onTap: appStore.isLoading
                       ? () {}
                       : () {
-                          checkValidation();
-                        },
+                    checkValidation();
+                  },
                 ),
               ),
             ],
@@ -701,6 +812,6 @@ class _AddServicesState extends State<AddServices> {
   StaticDataModel get getServiceType => serviceType == SERVICE_TYPE_FREE
       ? typeStaticData[0]
       : serviceType == SERVICE_TYPE_FIXED
-          ? typeStaticData[1]
-          : typeStaticData[2];
+      ? typeStaticData[1]
+      : typeStaticData[2];
 }

@@ -107,6 +107,12 @@ class AddServiceKey {
   static String providerAddressId = ' provider_address_id';
   static String attchments = 'attchments';
   static String visitType = 'visit_type';
+
+  static String predictivePreventivePrice = 'predictivePreventivePrice';
+  static String breakdownMaintenancePrice = 'breakdownMaintenancePrice';
+
+
+
 }
 
 class AddAddressKey {
