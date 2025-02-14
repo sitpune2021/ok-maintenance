@@ -16,6 +16,7 @@ import 'package:handyman_provider_flutter/utils/model_keys.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../models/user_data.dart';
+import '../networks/firebase_services/notification_service.dart';
 
 class BookingItemComponent extends StatefulWidget {
   final String? status;
@@ -52,20 +53,159 @@ class BookingItemComponentState extends State<BookingItemComponent> {
     return formatDate(getSlotWithDate(date: bookingDetail.date.validate(), slotTime: bookingDetail.bookingSlot.validate()), isTime: true);
   }
 
+  // Future<void> updateBooking(BookingData booking, String updatedStatus, int index) async {
+  //   appStore.setLoading(true);
+  //   Map request = {
+  //     CommonKeys.id: booking.id,
+  //     BookingUpdateKeys.status: updatedStatus,
+  //     BookingUpdateKeys.paymentStatus: booking.isAdvancePaymentDone ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID : booking.paymentStatus.validate(),
+  //   };
+  //   await bookingUpdate(request).then((res) async {
+  //     setState(() {});
+  //     // appStore.setLoading(false);
+  //   }).catchError((e) {
+  //     // appStore.setLoading(false);
+  //   });
+  // }
+
+  ///  accept booking
+  // Future<void> updateBooking(BookingData booking, String updatedStatus, int index) async {
+  //   appStore.setLoading(true);
+  //   Map request = {
+  //     CommonKeys.id: booking.id,
+  //     BookingUpdateKeys.status: updatedStatus,
+  //     BookingUpdateKeys.paymentStatus: booking.isAdvancePaymentDone
+  //         ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
+  //         : booking.paymentStatus.validate(),
+  //   };
+  //
+  //   await bookingUpdate(request).then((res) async {
+  //     setState(() {});
+  //
+  //     // Send Notification on Booking Accepted
+  //     if (updatedStatus == BookingStatusKeys.accept) {
+  //       UserData receiverUser = UserData(
+  //         id: booking.customerId.validate(),
+  //         firstName: booking.customerName.validate(),
+  //         // Add other required fields for the receiver user
+  //       );
+  //
+  //       // Fetch the sender user data (e.g., the provider or handyman)
+  //       UserData senderUserData = UserData(
+  //         id: appStore.userId.validate(),
+  //         firstName: appStore.userFirstName.validate(),
+  //         lastName: appStore.userLastName.validate(),
+  //         email: appStore.userEmail.validate(),
+  //         profileImage: appStore.userProfileImage.validate(),
+  //         // Add other required fields for the sender user
+  //       );
+  //
+  //       // Send the notification
+  //       String title = "Booking Accepted";
+  //       String content = "${senderUserData.firstName} ${senderUserData.lastName} has accepted your booking.";
+  //
+  //       // Optional: You can provide an image if needed
+  //       String? image = null;
+  //
+  //       // Call the sendPushNotifications method
+  //       NotificationService notificationService = NotificationService();
+  //       await notificationService.sendPushNotifications(title, content, image: image, receiverUser: receiverUser, senderUserData: senderUserData);
+  //     }
+  //
+  //     // appStore.setLoading(false);
+  //   }).catchError((e) {
+  //     // Handle error
+  //     // appStore.setLoading(false);
+  //   });
+  // }
+  ///  accept / reject booking
   Future<void> updateBooking(BookingData booking, String updatedStatus, int index) async {
     appStore.setLoading(true);
     Map request = {
       CommonKeys.id: booking.id,
       BookingUpdateKeys.status: updatedStatus,
-      BookingUpdateKeys.paymentStatus: booking.isAdvancePaymentDone ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID : booking.paymentStatus.validate(),
+      BookingUpdateKeys.paymentStatus: booking.isAdvancePaymentDone
+          ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
+          : booking.paymentStatus.validate(),
     };
+
     await bookingUpdate(request).then((res) async {
       setState(() {});
+
+      // Prepare user data for receiver (customer)
+      UserData receiverUser = UserData(
+        id: booking.customerId.validate(),
+        firstName: booking.customerName.validate(),
+        // Add other required fields for the receiver user
+      );
+
+      // Prepare sender data (provider or handyman)
+      UserData senderUserData = UserData(
+        id: appStore.userId.validate(),
+        firstName: appStore.userFirstName.validate(),
+        lastName: appStore.userLastName.validate(),
+        email: appStore.userEmail.validate(),
+        profileImage: appStore.userProfileImage.validate(),
+        // Add other required fields for the sender user
+      );
+
+      // Determine the notification content based on the updated status
+      String title = updatedStatus == BookingStatusKeys.accept
+          ? "Booking Accepted"
+          : updatedStatus == BookingStatusKeys.rejected
+          ? "Booking Rejected"
+          : updatedStatus == BookingStatusKeys.cancelled
+          ? "Booking Cancelled"
+          : "Booking Status Updated";
+
+      String content = updatedStatus == BookingStatusKeys.accept
+          ? "${senderUserData.firstName} ${senderUserData.lastName} has accepted your booking."
+          : updatedStatus == BookingStatusKeys.rejected
+          ? "${senderUserData.firstName} ${senderUserData.lastName} has rejected your booking."
+          : updatedStatus == BookingStatusKeys.cancelled
+          ? "${senderUserData.firstName} ${senderUserData.lastName} has cancelled your booking."
+          : "${senderUserData.firstName} ${senderUserData.lastName} has updated your booking status.";
+
+      // Optional: You can provide an image if needed
+      String? image = null;
+
+      // Send notification to customer
+      NotificationService notificationService = NotificationService();
+      await notificationService.sendPushNotifications(title, content, image: image, receiverUser: receiverUser, senderUserData: senderUserData);
+
+      // Send notification to the provider as well
+      UserData providerReceiverUser = UserData(
+        id: appStore.userId.validate(),
+        firstName: appStore.userFirstName.validate(),
+        lastName: appStore.userLastName.validate(),
+        // Add other required fields for the provider user
+      );
+
+      String providerTitle = updatedStatus == BookingStatusKeys.accept
+          ? "Booking Accepted"
+          : updatedStatus == BookingStatusKeys.rejected
+          ? "Booking Rejected"
+          : updatedStatus == BookingStatusKeys.cancelled
+          ? "Booking Cancelled"
+          : "Booking Status Updated";
+
+      String providerContent = updatedStatus == BookingStatusKeys.accept
+          ? "You have accepted the booking from ${receiverUser.firstName}."
+          : updatedStatus == BookingStatusKeys.rejected
+          ? "You have rejected the booking from ${receiverUser.firstName}."
+          : updatedStatus == BookingStatusKeys.cancelled
+          ? "You have cancelled the booking with ${receiverUser.firstName}."
+          : "You have updated the booking status with ${receiverUser.firstName}.";
+
+      await notificationService.sendPushNotifications(providerTitle, providerContent, image: image, receiverUser: providerReceiverUser, senderUserData: senderUserData);
+
       // appStore.setLoading(false);
     }).catchError((e) {
+      // Handle error
       // appStore.setLoading(false);
     });
   }
+
 
   Future<void> confirmationRequestDialog(BuildContext context, int index, String status) async {
     showConfirmDialogCustom(

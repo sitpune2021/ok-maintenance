@@ -76,6 +76,22 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   TextEditingController descriptionCont = TextEditingController();
   TextEditingController whyChooseMeCont = TextEditingController();
 
+  TextEditingController companyNameCont = TextEditingController();
+  TextEditingController companyAddressCont = TextEditingController();
+  TextEditingController gstNumberCont = TextEditingController();
+  TextEditingController panNumberCont = TextEditingController();
+  TextEditingController cinNumberCont = TextEditingController();
+
+
+
+  /// New controllers for tax details
+  TextEditingController igstCont = TextEditingController();
+  TextEditingController cgstCont = TextEditingController();
+  TextEditingController sgstCont = TextEditingController();
+
+  bool isInterStateService = false;
+
+
   TextEditingController pinCodeCont = TextEditingController();
   String placeName = '';
   String pinCodeError = '';
@@ -132,6 +148,19 @@ class EditProfileScreenState extends State<EditProfileScreen> {
     addressCont.text = appStore.address;
     serviceAddressId = appStore.serviceAddressId;
     designationCont.text = appStore.designation;
+
+    /// Fetch and set company details if they exist
+    // companyNameCont.text = appStore.companyName;
+    // companyAddressCont.text = appStore.companyAddress;
+    // gstNumberCont.text = appStore.gstNumber;
+    // panNumberCont.text = appStore.panNumber;
+    // cinNumberCont.text = appStore.cinNumber;
+
+    /// Fetch and set tax details if they exist
+    // igstCont.text = appStore.igst;
+    // cgstCont.text = appStore.cgst;
+    // sgstCont.text = appStore.sgst;
+
     selectedCountryPicker = Country(
       phoneCode: appStore.userContactNumber.split("-").first.isEmpty ? "+91" : appStore.userContactNumber.split("-").first.toString(),
       countryCode: "",
@@ -158,6 +187,29 @@ class EditProfileScreenState extends State<EditProfileScreen> {
       await getCountry();
     }
   }
+
+  void updateTaxFields() {
+    if (selectedCountry != null && selectedState != null) {
+      if (selectedState!.id != appStore.stateId) {
+        // Interstate service (IGST applies)
+        setState(() {
+          isInterStateService = true;
+          igstCont.text = "18"; // Default IGST value
+          cgstCont.text = "10";
+          sgstCont.text = "10";
+        });
+      } else {
+        // Intrastate service (CGST and SGST apply)
+        setState(() {
+          isInterStateService = false;
+          igstCont.text = "18";
+          cgstCont.text = "9"; // Default CGST value
+          sgstCont.text = "9"; // Default SGST value
+        });
+      }
+    }
+  }
+
 // Function to fetch place details from Pin Code
   Future<void> getPlaceFromPinCode(String pinCode) async {
     final apiKey = 'AIzaSyD9XZBYlnwfrKQ1ZK-EUxJtFePKXW_1sfE';  // Use your API key
@@ -301,6 +353,22 @@ class EditProfileScreenState extends State<EditProfileScreen> {
     multiPartRequest.fields[UserKeys.whyChooseTitle] = whyChooseMeCont.text.trim();
     multiPartRequest.fields[UserKeys.description] = descriptionCont.text.validate();
     multiPartRequest.fields[UserKeys.displayName] = '${fNameCont.text.validate() + " " + lNameCont.text.validate()}';
+
+
+
+
+    /// Add company details to the request
+    // multiPartRequest.fields[UserKeys.companyName] = companyNameCont.text;
+    // multiPartRequest.fields[UserKeys.companyAddress] = companyAddressCont.text;
+    // multiPartRequest.fields[UserKeys.gstNumber] = gstNumberCont.text;
+    // multiPartRequest.fields[UserKeys.panNumber] = panNumberCont.text;
+    // multiPartRequest.fields[UserKeys.cinNumber] = cinNumberCont.text;
+
+    /// Add tax details to the request
+    // multiPartRequest.fields[UserKeys.igst] = igstCont.text;
+    // multiPartRequest.fields[UserKeys.cgst] = cgstCont.text;
+    // multiPartRequest.fields[UserKeys.sgst] = sgstCont.text;
+
 
     if (isUserTypeHandyman && serviceAddressId != null) multiPartRequest.fields[UserKeys.serviceAddressId] = serviceAddressId.toString();
     if (imageFile != null) {
@@ -711,6 +779,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                                   setState(() {});
 
                                   getCity(value.id!);
+                                  updateTaxFields(); // Update tax fields based on the selected state
                                 },
                               ).expand(),
                           ],
@@ -1092,6 +1161,93 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                           child: Text(languages.addReasons, style: primaryTextStyle(color: context.primaryColor)),
                         ),
                         28.height,
+
+
+
+                        // Company Name
+                        AppTextField(
+                          textFieldType: TextFieldType.NAME,
+                          controller: companyNameCont,
+                          decoration: inputDecoration(context, hint: "Company Name"),
+                          // focus: descriptionFocus,
+                          // nextFocus: whyChooseMeFocus,
+                          isValidationRequired: false,
+                        ),
+                        16.height,
+
+                        // Company Address
+                        AppTextField(
+                          textFieldType: TextFieldType.MULTILINE,
+                          controller: companyAddressCont,
+                          maxLines: 5,
+                          minLines: 3,
+                          decoration: inputDecoration(context, hint: "Company Address"),
+                          isValidationRequired: false,
+                        ),
+                        16.height,
+
+                        // GST Number
+                        AppTextField(
+                          textFieldType: TextFieldType.NAME,
+                          controller: gstNumberCont,
+                          decoration: inputDecoration(context, hint: "GST Number"),
+                          isValidationRequired: false,
+                        ),
+                        16.height,
+
+                        // PAN Number
+                        AppTextField(
+                          textFieldType: TextFieldType.NAME,
+                          controller: panNumberCont,
+                          decoration: inputDecoration(context, hint: "PAN Number"),
+                          isValidationRequired: false,
+                        ),
+                        16.height,
+
+                        // CIN Number
+                        AppTextField(
+                          textFieldType: TextFieldType.NAME,
+                          controller: cinNumberCont,
+                          decoration: inputDecoration(context, hint: "CIN Number"),
+                          isValidationRequired: false,
+                        ),
+                        16.height,
+
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AppTextField(
+                                textFieldType: TextFieldType.NUMBER,
+                                controller: igstCont,
+                                decoration: inputDecoration(context, hint: "IGST (%)"),
+                                enabled: isInterStateService,
+                                isValidationRequired: false,
+                              ),
+                            ),
+                            8.width,
+                            Expanded(
+                              child: AppTextField(
+                                textFieldType: TextFieldType.NUMBER,
+                                controller: cgstCont,
+                                decoration: inputDecoration(context, hint: "CGST (%)"),
+                                enabled: !isInterStateService,
+                                isValidationRequired: false,
+                              ),
+                            ),
+                            8.width,
+                            Expanded(
+                              child: AppTextField(
+                                textFieldType: TextFieldType.NUMBER,
+                                controller: sgstCont,
+                                decoration: inputDecoration(context, hint: "SGST (%)"),
+                                enabled: !isInterStateService,
+                                isValidationRequired: false,
+                              ),
+                            ),
+                          ],
+                        ),
+                        16.height,
+
                         AppButton(
                           text: languages.saveChanges,
                           height: 40,
