@@ -14,6 +14,7 @@ import 'package:handyman_provider_flutter/networks/rest_apis.dart';
 import 'package:handyman_provider_flutter/provider/bank_details/bank_details.dart';
 import 'package:handyman_provider_flutter/provider/blog/view/blog_list_screen.dart';
 import 'package:handyman_provider_flutter/provider/components/commission_component.dart';
+import 'package:handyman_provider_flutter/provider/fragments/AMCSelectionScreen.dart';
 import 'package:handyman_provider_flutter/provider/handyman_commission_list_screen.dart';
 import 'package:handyman_provider_flutter/provider/handyman_list_screen.dart';
 import 'package:handyman_provider_flutter/provider/jobRequest/bid_list_screen.dart';
@@ -38,6 +39,7 @@ import 'package:nb_utils/nb_utils.dart';
 
 import '../../components/switch_push_notification_subscription_component.dart';
 import '../../helpDesk/help_desk_list_screen.dart';
+
 import '../services/addons/addon_service_list_screen.dart';
 
 class ProviderProfileFragment extends StatefulWidget {
@@ -65,8 +67,23 @@ class ProviderProfileFragmentState extends State<ProviderProfileFragment> {
   Future<void> init() async {
     /// get wallet balance api call
     appStore.setUserWalletAmount();
+    await fetchProviderStatus();
   }
-
+  Future<void> fetchProviderStatus() async {
+    try {
+      appStore.setLoading(true);
+      await getProviderStatus().then((value) {
+        // appStore.setOnlineStatus(value.message);
+        appStore.setLoading(false);
+      }).catchError((e) {
+        appStore.setLoading(false);
+        // toast(e.toString());
+      });
+    } catch (e) {
+      appStore.setLoading(false);
+      // toast(e.toString());
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Observer(
@@ -369,6 +386,8 @@ class ProviderProfileFragmentState extends State<ProviderProfileFragment> {
                       BankDetails().launch(context);
                     },
                   ),
+
+
                   Divider(height: 0, thickness: 1, indent: 15.0, endIndent: 15.0, color: context.dividerColor),
                   SettingItemWidget(
                     leading: Image.asset(ic_theme, height: 18, width: 16, color: appStore.isDarkMode ? white : gray.withOpacity(0.8)),
@@ -414,6 +433,16 @@ class ProviderProfileFragmentState extends State<ProviderProfileFragment> {
                     },
                   ),
                   Divider(height: 0, thickness: 1, indent: 15.0, endIndent: 15.0, color: context.dividerColor),
+                  SettingItemWidget(
+                    leading: Image.asset(handyman, height: 14, width: 16, color: appStore.isDarkMode ? white : gray.withOpacity(0.8)),
+                    title: "AMC Selection",
+                    titleTextStyle: primaryTextStyle(),
+                    trailing: Icon(Icons.chevron_right, color: appStore.isDarkMode ? white : gray.withOpacity(0.8), size: 24),
+                    onTap: () {
+                      AMCSelectionScreen().launch(context);
+                    },
+                  ),
+                  Divider(height: 0, thickness: 1, indent: 15.0, endIndent: 15.0, color: context.dividerColor),
                   SwitchPushNotificationSubscriptionComponent(),
                   Divider(height: 0, thickness: 1, indent: 15.0, endIndent: 15.0, color: context.dividerColor),
                   SettingItemWidget(
@@ -432,6 +461,23 @@ class ProviderProfileFragmentState extends State<ProviderProfileFragment> {
                     ),
                   ),
                   8.height,
+
+                  SettingItemWidget(
+                    leading: Icon(Icons.online_prediction, color: appStore.isDarkMode ? white : gray.withOpacity(0.8)),
+                    title: "OnlineStatus",
+                    titleTextStyle: primaryTextStyle(),
+                    trailing: Transform.scale(
+                      scale: 0.7,
+                      child: Switch.adaptive(
+                        value: appStore.isOnline,
+                        onChanged: (v) {
+                          appStore.setOnlineStatus(v); // Update local state
+                          updateProviderOnlineStatus(v); // Call API to update status in backend
+                        },
+                      ).withHeight(24),
+                    ),
+                  ),
+
                 ],
               ),
             ),
@@ -493,5 +539,24 @@ class ProviderProfileFragmentState extends State<ProviderProfileFragment> {
         );
       },
     );
+  }
+
+  Future<void> updateProviderOnlineStatus(bool isOnline) async {
+    try {
+      appStore.setLoading(true);
+      Map<String, dynamic> req = {
+        "isOnline": isOnline,
+      };
+      await updateProviderStatus(req).then((value) {
+        appStore.setLoading(false);
+        // toast(value.message);
+      }).catchError((e) {
+        appStore.setLoading(false);
+        // toast(e.toString());
+      });
+    } catch (e) {
+      appStore.setLoading(false);
+      // toast(e.toString());
+    }
   }
 }

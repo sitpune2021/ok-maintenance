@@ -152,6 +152,16 @@ abstract class _AppStore with Store {
   @observable
   bool isHelpDeskFirstTime = getBoolAsync(IS_HELP_DESK_FIRST_TIME, defaultValue: true);
 
+
+  @observable
+  bool isOnline = false; // Add this line
+
+  @action
+  Future<void> setOnlineStatus(bool val) async {
+    isOnline = val;
+    await setValue('isOnline', val); // Save it to persistent storage if needed
+  }
+
   @action
   void setExpansionDynamicHeight(double val) {
     expansionDynamicHeight = val;

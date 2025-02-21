@@ -69,8 +69,34 @@ import '../provider/jobRequest/models/bidder_data.dart';
 import '../provider/jobRequest/models/post_job_data.dart';
 import '../utils/app_configuration.dart';
 import '../utils/firebase_messaging_utils.dart';
-
+import 'package:http/http.dart' as http;
 //region Auth API
+
+
+
+
+Future<BaseResponseModel> updateProviderStatus(Map request) async {
+  return BaseResponseModel.fromJson(await handleResponse(await buildHttpResponse(
+    'provider/update-status',
+    request: request,
+    method: HttpMethodType.PATCH,
+  )));
+}
+Future<BaseResponseModel> getProviderStatus() async {
+  return BaseResponseModel.fromJson(await handleResponse(await buildHttpResponse(
+    'provider/status',
+    method: HttpMethodType.GET,
+  )));
+}
+
+Future<BaseResponseModel> submitAMCRequest(Map<String, dynamic> request) async {
+  // Implement the logic to submit your AMC request
+  // Example:
+  return BaseResponseModel.fromJson(await handleResponse(
+      await buildHttpResponse('submit-amc-request', request: request, method: HttpMethodType.POST)
+  ));
+}
+
 
 Future<void> logout(BuildContext context) async {
   showInDialog(
