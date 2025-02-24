@@ -68,7 +68,7 @@ class _HandymanWidgetState extends State<HandymanWidget> {
               Column(
                 children: [
                   HandymanNameWidget(
-                    name: widget.data!.displayName.validate(),
+                    name: '${widget.data!.firstName.validate()} ${widget.data!.lastName.validate()}', // Concatenate first and last name
                     isHandymanAvailable: widget.data!.isHandymanAvailable,
                     size: 14,
                   ).center(),
@@ -138,6 +138,7 @@ class _HandymanWidgetState extends State<HandymanWidget> {
             userType: USER_TYPE_HANDYMAN,
             data: widget.data,
             onUpdate: () {
+              setState(() {});
               widget.onUpdate?.call();
             },
           ).launch(context, pageRouteAnimation: PageRouteAnimation.Fade);

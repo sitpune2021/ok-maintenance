@@ -169,7 +169,8 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
         UserKeys.status: USER_STATUS_CODE,
         UserKeys.contactNumber: buildMobileNumber(),
         UserKeys.designation: designationCont.text.validate(),
-        if (serviceAddressId != null && serviceAddressId != -1)
+        // if (serviceAddressId != null && serviceAddressId != -1)
+        if (serviceAddressId != null && serviceAddressId != -1 && serviceAddressId != 0)
           UserKeys.serviceAddressId: serviceAddressId.validate(),
         UserKeys.email: emailCont.text,
         UserKeys.handymanTypeId: selectedHandymanCommission?.id,
