@@ -20,6 +20,7 @@ import 'package:handyman_provider_flutter/networks/firebase_services/auth_servic
 import 'package:handyman_provider_flutter/networks/firebase_services/chat_messages_service.dart';
 import 'package:handyman_provider_flutter/networks/firebase_services/notification_service.dart';
 import 'package:handyman_provider_flutter/networks/firebase_services/user_services.dart';
+import 'package:handyman_provider_flutter/provider/bank_details/add_card.dart';
 import 'package:handyman_provider_flutter/provider/jobRequest/models/post_job_detail_response.dart';
 import 'package:handyman_provider_flutter/screens/splash_screen.dart';
 import 'package:handyman_provider_flutter/store/AppStore.dart';
@@ -83,6 +84,7 @@ List<UserData>? cachedHandymanList;
 List<TotalData>? cachedTotalDataList;
 List<WalletHistory>? cachedWalletList;
 List<BankHistory>? cachedBankList;
+List<CardHistory>? cachedCardList; /// card add my side
 List<HelpDeskListData>? cachedHelpDeskListData;
 //endregion
 

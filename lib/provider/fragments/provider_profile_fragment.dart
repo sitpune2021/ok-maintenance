@@ -40,6 +40,7 @@ import 'package:nb_utils/nb_utils.dart';
 import '../../components/switch_push_notification_subscription_component.dart';
 import '../../helpDesk/help_desk_list_screen.dart';
 
+import '../bank_details/card_details.dart';
 import '../services/addons/addon_service_list_screen.dart';
 
 class ProviderProfileFragment extends StatefulWidget {
@@ -384,6 +385,16 @@ class ProviderProfileFragmentState extends State<ProviderProfileFragment> {
                     trailing: Icon(Icons.chevron_right, color: appStore.isDarkMode ? white : gray.withOpacity(0.8), size: 24),
                     onTap: () {
                       BankDetails().launch(context);
+                    },
+                  ),
+                  Divider(height: 0, thickness: 1, indent: 15.0, endIndent: 15.0, color: context.dividerColor),
+                  SettingItemWidget(
+                    leading: Image.asset(ic_card, height: 16, width: 16, color: appStore.isDarkMode ? white : gray.withOpacity(0.8)),
+                    title: "Card Details",
+                    titleTextStyle: primaryTextStyle(),
+                    trailing: Icon(Icons.chevron_right, color: appStore.isDarkMode ? white : gray.withOpacity(0.8), size: 24),
+                    onTap: () {
+                      CardDetailsScreen().launch(context);
                     },
                   ),
 

@@ -65,6 +65,7 @@ import '../models/my_bid_response.dart';
 import '../models/request_list_response.dart';
 import '../models/wallet_history_list_response.dart';
 import '../models/wallet_response.dart';
+import '../provider/bank_details/add_card.dart';
 import '../provider/jobRequest/models/bidder_data.dart';
 import '../provider/jobRequest/models/post_job_data.dart';
 import '../utils/app_configuration.dart';
@@ -72,6 +73,33 @@ import '../utils/firebase_messaging_utils.dart';
 import 'package:http/http.dart' as http;
 //region Auth API
 
+
+
+
+/*Add my side temprory*/
+Future<List<CardHistory>> getCardListDetail({
+  required int userId,
+  int? page,
+  var perPage = PER_PAGE_ITEM,
+  required List<CardHistory> list,
+  Function(bool)? lastPageCallback,
+}) async {
+  CardListResponse res = CardListResponse.fromJson(
+    await handleResponse(await buildHttpResponse(
+        'user-bank-detail?per_page=$perPage&page=$page&user_id=$userId', method: HttpMethodType.GET)),
+  );
+
+  if (page == 1) list.clear();
+  list.addAll(res.data.validate());
+
+  cachedCardList = list;
+
+  appStore.setLoading(false);
+
+  lastPageCallback?.call(res.data.validate().length != PER_PAGE_ITEM);
+
+  return list;
+}
 
 
 

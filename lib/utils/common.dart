@@ -589,6 +589,16 @@ Future<List<File>> pickFiles({
   return _filePath;
 }
 
+
+String maskCardNumber(String cardNumber) {
+  if (cardNumber.length < 12) return cardNumber; // If the card number is too short, return as is.
+
+  String visiblePart = cardNumber.substring(cardNumber.length - 4);
+  String maskedPart = '**** **** **** ';
+
+  return maskedPart + visiblePart;
+}
+
 String bankAccountWidget(String accountNo) {
   if (accountNo.length <= 4) {
     return accountNo;
